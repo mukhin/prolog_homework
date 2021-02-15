@@ -1,0 +1,375 @@
+package calculator;
+
+/** Имитация функционального программирования.
+ * 	Для хранения результатов разбора частей выражения используется класс structNode*/
+
+import java.text.DecimalFormat;
+
+/** Калькулятор математических выражений в парадигме функционального программирования
+ *  В отличие от классов ExpressionCalculator и Node вместо 
+ */
+public class ExpressionCalculatorFunc2 {
+		
+	/** Служебные символы */
+	public static final String serviceSymbolString = "+-*/()[]{},"; // Порядок следования соответствует enum OPERATOR
+	
+	/** Математические операторы и функции */
+	public static enum OPERATOR {
+		// Операторы + скобки + запятая
+		PLUS, MINUS, MULTIPLY, DIVIDE, LEFT_BRACKET, RIGHT_BRACKET, LEFT_SQUARE_BRACKET, RIGHT_SQUARE_BRACKET, LEFT_CURLY_BRACKET, RIGHT_CURLY_BRACKET, COMMA
+		// Математические функции
+		, SIN, COS, TAN, COT, RANDOM, ROUND, ABS, EXP, LOG, SQRT, POW, MIN, MAX
+		// Служебные значения: число, унарный минус, окончание выражения
+		, NUMBER, UNARY_MINUS, END
+	};
+
+	/** Математические константы */
+	public static enum CONSTANT_NAME {
+		PI, E, SQRT2, SQRT1_2, LN2, LN10, LOG2E, LOG10E
+	};
+	
+	/** Значения математических константных выражений, порядок следования соответствует enum CONSTANT_NAME*/
+	public static final double CONSTANT_VALUE[] = {
+		Math.PI,Math.E,Math.sqrt(2),Math.sqrt(.5),Math.log(2),Math.log(10),1./Math.log(2),1./Math.log(10)
+	};
+	
+	/** Формат строки резудьтатов вычисления*/
+	public static final String decimalFormat = "###############.###############";
+	
+	/** Структура математического выражения */
+	public class structNode {
+			OPERATOR operator = null;	//Оператор
+			double value = 0; 			//Значение
+			structNode left = null;		//Левая и правая части выражения
+			structNode right = null; 
+	}
+	
+	public structNode root = null; // Корневой узел дерева выражений
+	public byte[] expression; 		// Выражение
+	public double tokenValue; 		// Значение токена для числа или константного выражения
+	public OPERATOR operator; 		// Оператор          
+	public int position; 			// Позиция курсора в выражении
+	
+	/** Инициализация  структуры математического выражения 
+	 * @param node -- выражение, которое собираемся инициализировать
+	 * @param operator -- оператор
+	 * @param value -- значение выражения */
+	public static void init(structNode node, OPERATOR operator, double value) {
+		node.operator = operator;
+		node.value = value; 
+		node.left = null;
+		node.right = null;
+		return;
+	}
+	
+	/** Инициализация  структуры математического выражения 
+	 * @param node -- выражение, которое собираемся инициализировать
+	 * @param operator -- оператор
+	 * @param left -- левая часть выражения */
+	public static void init(structNode node, OPERATOR operator, structNode left) {
+		node.operator = operator;
+		node.value = 0; 
+		node.left = left;
+		node.right = null;
+		return;
+	}
+	
+	/** Инициализация  структуры математического выражения 
+	 * @param node -- выражение, которое собираемся инициализировать
+	 * @param operator -- оператор
+	 */
+	public static void init(structNode node, OPERATOR operator) {
+		node.operator = operator;
+		node.value = 0; 
+		node.left = null;
+		node.right = null;
+		return;
+	}
+	
+	// Проверка символов выражения
+	public static boolean isLetter(ExpressionCalculatorFunc2 ec){
+		return Character.isLetter(ec.expression[ec.position]);
+	}
+	  
+	private boolean isDigit(){
+		return Character.isDigit(expression[position]); 
+	}
+	  
+	private boolean isPoint(){
+		return expression[position] == '.'; 
+	}
+	 
+	private boolean isFunctionSymbol(){
+		byte c = expression[position];
+	 	return Character.isLetterOrDigit(c) || c == '_'; 
+	}
+	
+	/** Получить значения оператора/функции, константное выражение (токен), переместить позицию курсора 
+	 *  @return OPERATOR */
+	public static OPERATOR getToken(ExpressionCalculatorFunc2 ec) throws Exception{
+		int i;
+		
+		if(ec.position == expression.length-1){ // Дошли до конца строки выражения
+			operator = OPERATOR.END;
+		}
+		else if ((i = serviceSymbolString.indexOf(expression[position])) != -1 ){ // Если встретился один из символов "+-*/()[]{},", то устанавливаем оператор или скобки
+			position++;
+			operator = OPERATOR.values()[i];
+		}
+		else if(isLetter(ec)){ // Иначе ищем по наименованию функций
+			for(i = position++; isFunctionSymbol(); position++); // Смещаем курсор позиции, пока символы удовлетворяют правилам именования функций
+			String token = new String(expression, i, position-i);// Выбираем подстроку названия функции
+     
+			try {
+			  	operator = OPERATOR.valueOf(token); // Пробуем получить ID функции по её названию
+			  	i = operator.ordinal();
+			  	
+			  	if(i < OPERATOR.SIN.ordinal() || i > OPERATOR.MAX.ordinal()){ 
+			  		throw new IllegalArgumentException(); // Если ID функции вне диапазона SIN..MAX, генерируем ошибку
+			  	}		  	
+			}
+			catch (IllegalArgumentException _ex){ // Возможно, это одно из константных математических выражений
+				try{
+					tokenValue = CONSTANT_VALUE[CONSTANT_NAME.valueOf(token).ordinal()];
+					operator = OPERATOR.NUMBER;
+				}
+				catch (IllegalArgumentException ex){
+					throw new Exception("Ошибка: Неизвестное ключевое слово");
+				}
+			}
+		}
+		else if(isDigit() || isPoint()){ // Пробуем получить числовое значение
+			for(i = position++ ; isDigit() || isPoint() || expression[position] == 'E' 
+					|| expression[position-1] == 'E' && "+-".indexOf(expression[position])!= -1; position++);
+			
+			tokenValue =Double.parseDouble(new String(expression, i, position-i));
+			operator = OPERATOR.NUMBER;
+		}
+		else{
+			throw new Exception("Ошибка: Неизвестный символ в " + expression);
+		}
+		
+		return operator;
+	}      
+
+	/** Компиляция:
+	 *  - форматирование исходного выражения -- приведение к заглавным буквам, исключение пробелов и табуляций;
+	 *  - построение дерева подвыражений, с корневым элементом root. 
+	 *  @param expression -- исходное математическое выражение.
+	 */
+	public static void compile(String expression, ExpressionCalculatorFunc2 ec) throws Exception{
+		ec.position=0; // Позиция курсора
+			// Выражение приводится к заглавным буквам, чтобы использовать для поиска по enum OPERATOR
+		String s = expression.toUpperCase(); 
+		
+		// Убрать пробелы и окончание строки
+		String from[] = {" ","\t"};
+		for(int i = 0; i < from.length; i++){
+			s = s.replace(from[i], "");
+		}
+		ec.expression=(s+'\0').getBytes();
+		
+		getToken(ec);
+		if(ec.operator == OPERATOR.END){
+			throw new Exception("Ошибка: Отсутствует окончание выражения");
+		}
+		ec.root = parse();
+		if(ec.operator!= OPERATOR.END){
+			throw new Exception("Ошибка: Отсутствует окончание выражения");
+		}
+	}
+
+	/** Разбор операций сложения/вычитания
+	 * @return structNode */
+	private structNode parse() throws Exception{
+		structNode node = parse1();
+		while(operator == OPERATOR.PLUS || operator == OPERATOR.MINUS){
+			structNode node1 = node;
+			node = new structNode();
+			init(node, operator, node1);
+			getToken();
+			if(operator == OPERATOR.PLUS || operator == OPERATOR.MINUS){
+				throw new Exception("Ошибка: Указывать последовательно два оператора недопустимо, попробуйте использовать скобки");
+			}
+			node.right = parse1();
+		}
+		return node;
+	}
+   
+	/** Разбор математических операторов 
+	 * @return structNode */
+	private structNode parse1() throws Exception{
+		structNode node = parse2();
+		while(operator == OPERATOR.MULTIPLY || operator == OPERATOR.DIVIDE){
+			structNode node1 = node;
+			node = new structNode();
+			init (node, operator, node1);
+			
+			getToken();
+			if(operator == OPERATOR.PLUS || operator == OPERATOR.MINUS){
+				throw new Exception("Ошибка: Указывать последовательно два оператора недопустимо, попробуйте использовать скобки");
+			}
+			node.right=parse2();
+			
+		}
+		return node;
+	}	
+
+	/** Разбор унарных операторов
+	 * @return structNode */
+	private structNode parse2() throws Exception{
+		structNode node;
+		if(operator == OPERATOR.MINUS){
+			getToken();
+			node = new structNode();
+			init(node, OPERATOR.UNARY_MINUS, parse3());
+		}
+		else{
+			if(operator == OPERATOR.PLUS){
+				getToken();
+			}
+			node = parse3();
+		}
+		return node;      
+	}
+
+	/** Разбор функций и заключённых в скобки выражений + определение аргументов при операторах
+	 * @return structNode */
+	private structNode parse3() throws Exception{
+		structNode node;
+		OPERATOR open;
+		
+		if(operator.ordinal() >= OPERATOR.SIN.ordinal()
+		&& operator.ordinal() <= OPERATOR.MAX.ordinal()){
+			
+			int arguments;
+			if( operator.ordinal() >= OPERATOR.POW.ordinal()
+			&& operator.ordinal() <= OPERATOR.MAX.ordinal() ){
+				arguments = 2;
+			}
+			else{
+				arguments = operator == OPERATOR.RANDOM ? 0:1;
+			}
+  			
+			node = new structNode();
+			init(node, operator);
+			open = getToken();
+			
+			if(operator != OPERATOR.LEFT_BRACKET
+				&& operator != OPERATOR.LEFT_SQUARE_BRACKET
+				&& operator != OPERATOR.LEFT_CURLY_BRACKET ){
+				throw new Exception("Ошибка: Нет открывающей скобки");
+			}
+			getToken();
+      
+			if(arguments > 0){
+				node.left = parse();
+	      
+				if( arguments == 2 ){
+					if(operator != OPERATOR.COMMA){
+						throw new Exception("Ошибка: Пропущена запятая");
+					}
+					getToken();
+					node.right = parse();
+				}
+			}
+			checkBracketBalance(open); // проверка скобок
+		}
+		else{
+			switch(operator){
+				case NUMBER:
+					node = new structNode();
+					init(node, operator, tokenValue);
+				break;
+				case LEFT_BRACKET:
+				case LEFT_SQUARE_BRACKET:
+				case LEFT_CURLY_BRACKET:
+					open = operator;
+					getToken();
+					node = parse();
+					checkBracketBalance(open); // проверка скобок
+				break;
+				default:
+					throw new Exception("Ошибка: Аргумент неизвестен или отсутствует");
+			}
+		}
+		getToken();
+		return node;
+	}
+
+	/** Проверка наличия пары открывающая/закрывающая скобки */
+	private void checkBracketBalance(OPERATOR open) throws Exception {
+		if(open == OPERATOR.LEFT_BRACKET && operator != OPERATOR.RIGHT_BRACKET
+		|| open == OPERATOR.LEFT_SQUARE_BRACKET && operator != OPERATOR.RIGHT_SQUARE_BRACKET
+		|| open == OPERATOR.LEFT_CURLY_BRACKET && operator != OPERATOR.RIGHT_CURLY_BRACKET){
+			throw new Exception("Ошибка: Нет закрывающей скобки");
+		}
+	}
+	
+	/** Вычиселние математического выражения
+	 * @param structNode node математическое выражение
+	 * @return результат вычисления */
+	double nodeCalculate(structNode node) throws Exception {
+		switch(node.operator) {
+			case NUMBER: return node.value;
+
+			case PLUS: return nodeCalculate(node.left) + nodeCalculate(node.right);
+
+			case MINUS: return nodeCalculate(node.left) - nodeCalculate(node.right);
+
+			case MULTIPLY: return nodeCalculate(node.left) * nodeCalculate(node.right);
+
+			case DIVIDE: return nodeCalculate(node.left) / nodeCalculate(node.right);
+
+			case UNARY_MINUS: return -nodeCalculate(node.left);
+
+			case SIN: return Math.sin(Math.toRadians(nodeCalculate(node.left)));
+
+			case COS: return Math.cos(Math.toRadians(nodeCalculate(node.left)));
+
+			case TAN: return Math.tan(Math.toRadians(nodeCalculate(node.left)));
+
+			case COT: return 1/Math.tan(Math.toRadians(nodeCalculate(node.left)));
+  	
+			case RANDOM: return Math.random();
+
+			case ROUND: return Math.round(nodeCalculate(node.left));
+
+			case ABS: return Math.abs(nodeCalculate(node.left));
+
+			case EXP: return Math.exp(nodeCalculate(node.left));
+
+			case LOG: return Math.log(nodeCalculate(node.left));
+
+			case SQRT: return Math.sqrt(nodeCalculate(node.left));
+  	
+			case POW: return Math.pow(nodeCalculate(node.left), nodeCalculate(node.right));
+  	
+			case MIN: return Math.min(nodeCalculate(node.left), nodeCalculate(node.right));
+
+			case MAX: return Math.max(nodeCalculate(node.left), nodeCalculate(node.right));
+      	
+			default: throw new Exception("Ошибка вычисления выражения");
+		}
+	}	  
+  
+	/** Вычисление выражения root
+	 * @return результат вычисления */
+	public double calculate() throws Exception{
+		if(root == null){
+			throw new Exception("Ошибка: Перед вызовом функции calculate() необходим вызов функции compile()");
+		}
+		return nodeCalculate(root);
+	}
+
+	/**	Вычисление математического выражения
+	 *  @param String s строка математического выражения
+	 *	@return результат вычисления выражения */
+	public static String calculate(String s) throws Exception {
+		ExpressionCalculatorFunc2 calculator = new ExpressionCalculatorFunc2(); 
+		calculator.compile(s);
+		double result = calculator.calculate();
+		return new DecimalFormat(decimalFormat).format(result);
+	}	
+}
+
