@@ -13,7 +13,7 @@ import java.util.Map;
 
 import calculator.*;
 
-public class ExpressionCalculatorFuncTests {
+public class DijkstraAlgorithmCalculatorTests {
 	
 	private static void positiveTestConstructor (String testKey) {
 		System.out.println("Тест " + testKey);

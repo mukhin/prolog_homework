@@ -9,7 +9,7 @@ import java.text.DecimalFormat;
 /** Калькулятор математических выражений в парадигме функционального программирования
  *  В отличие от классов ExpressionCalculator и Node здесь используются статические функции.
  *  Дерево выражений строится из объектов класса StructNode. */
-public class ExpressionCalculatorFunc {
+public class DijkstraAlgorithmCalculator {
 	
 	/** Формат строки резудьтатов вычисления*/
 	public static final String decimalFormat = "#.###############";
@@ -24,8 +24,8 @@ public class ExpressionCalculatorFunc {
 	 * @param operator -- оператор
 	 * @param value -- значение выражения */
 	public static void init(StructNode node) throws Exception {
-		node.operator = ExpressionCalculatorFunc.operator;
-		node.value = ExpressionCalculatorFunc.tokenValue; 
+		node.operator = DijkstraAlgorithmCalculator.operator;
+		node.value = DijkstraAlgorithmCalculator.tokenValue; 
 		node.left = null;
 		node.right = null;
 		return;
@@ -330,7 +330,7 @@ public class ExpressionCalculatorFunc {
 		for(int i = 0; i < from.length; i++){
 			s = s.replace(from[i], "");
 		}
-		ExpressionCalculatorFunc.expression=(s+'\0').getBytes();
+		DijkstraAlgorithmCalculator.expression=(s+'\0').getBytes();
 		
 		getToken();
 		if(operator == Helper.OPERATOR.END){
