@@ -21,22 +21,26 @@ public class DijkstraAlgorithmCalculatorTests {
 			System.out.print("\""+entry.getKey()+"\"= ");
 			try {
 				String expression = entry.getKey();
-				expression = expression.replace(" ", "").replace("(-", "(0-").replace("(+", "(0+");
-				if (expression.charAt(0) == '-' || expression.charAt(0) == '+') {
-					  expression = "0" + expression;
-				}
+				expression = DijkstraAlgorithmCalculator.prepareExpressionString(expression);
 			  
 				final char[] input = expression.toCharArray(); //{'(','1','+','1',')'};
 				
-				char[] output = new char[input.length];
+				char[][] output = new char[input.length][input.length];
 				
 				if(DijkstraAlgorithmCalculator.expressionParser(input, output)) {
 					if (DijkstraAlgorithmCalculator.expressionCalc(output)) {
-						
-						System.out.println("Результат: " + String.valueOf(output) + "=" + DijkstraAlgorithmCalculator.getResult());
+						System.out.print("Результат: ");
+						for (int i = 0; i < output.length; i++) {
+							System.out.print(String.valueOf(output[i]));
+						}
+						System.out.println("=" + DijkstraAlgorithmCalculator.getResult());
 					}
 					else {
-						System.out.println("Ошибка вычисления: " + String.valueOf(output));
+						System.out.print("Ошибка вычисления: ");
+						for (int i = 0; i < output.length; i++) {
+							System.out.print(String.valueOf(output[i]));
+						}
+						System.out.println("");
 					}
 				}
 		    	assertEquals(entry.getValue(), DijkstraAlgorithmCalculator.getResult(), 0);
