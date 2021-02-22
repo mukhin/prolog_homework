@@ -284,6 +284,9 @@ public class DijkstraAlgorithmCalculator {
 				System.out.println("Ошибка вычисления: " + String.valueOf(output));
 			}
 		}
+		else {
+			System.out.println("Ошибка разбора: " + String.valueOf(input));
+		}
 	}
 }
 
