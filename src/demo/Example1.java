@@ -2,30 +2,31 @@ package demo;
 
 import calculator.*;
 
-public class Example1 {
+public class Example1 {//В качестве математического выражения используется строка входного аргумента 
 
 	public static void main(String[] args) {
 	  
-		String expression = args[0];
-		expression = expression.replace(" ", "").replace("(-", "(0-").replace("(+", "(0+");
-		if (expression.charAt(0) == '-' || expression.charAt(0) == '+') {
-			expression = "0" + expression;
-		}
+		String expression = DijkstraAlgorithmCalculator.prepareExpressionString(args[0]); //Исходное выражение
 
 		final char[] input = expression.toCharArray();
-		char[] output = new char[input.length];
+		char[][] output = new char[input.length][input.length];
 		
 		System.out.println("Исходное выражение: " + String.valueOf(input));
 	  
 		if(DijkstraAlgorithmCalculator.expressionParser(input, output)){
 			if (DijkstraAlgorithmCalculator.expressionCalc(output)) {
-				System.out.println("Результат: "
-						+ String.valueOf(output)
-						+ "="
-						+ DijkstraAlgorithmCalculator.getResult());
+				System.out.print("Результат: ");
+				for (int i = 0; i < output.length; i++) {
+					System.out.print(String.valueOf(output[i]));
+				}
+				System.out.println("=" + DijkstraAlgorithmCalculator.getResult());
 			}
 			else {
-				System.out.println("Ошибка вычисления: " + String.valueOf(output));
+				System.out.print("Ошибка вычисления: ");
+				for (int i = 0; i < output.length; i++) {
+					System.out.print(String.valueOf(output[i]));
+				}
+				System.out.println("");
 			}
 		}
 		else {
