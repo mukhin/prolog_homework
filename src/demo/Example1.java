@@ -1,25 +1,16 @@
 package demo;
 
-import calculator.*;
+import calculator.ExpressionCalculator;
 
 public class Example1 {
 
   public static void main(String[] args){
-	  
-	  String expression = args[0];
-	  expression = expression.replace(" ", "").replace("(-", "(0-").replace("(+", "(0+");
-	  if (expression.charAt(0) == '-' || expression.charAt(0) == '+') {
-		  expression = "0" + expression;
-	  }
 
-	  final char[] input = expression.toCharArray();
-	  char[] output = new char[input.length];
-		
-	  System.out.println("Исходное выражение: " + input.toString());
-	  
-	  if(DijkstraAlgorithmCalculator.expressionParser(input, output)){
-		  DijkstraAlgorithmCalculator.expressionCalc(output);
-		  
-	  }
+    try {
+      String v=ExpressionCalculator.calculate(args[0]);
+      System.out.println(v);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
   }
 }

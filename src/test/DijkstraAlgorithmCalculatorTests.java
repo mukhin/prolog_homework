@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.text.DecimalFormat;
 import java.util.Map;
 
 import calculator.*;
@@ -20,27 +21,30 @@ public class DijkstraAlgorithmCalculatorTests {
 		for (Map.Entry<String, Double> entry : map.entrySet()) {
 			System.out.print("\""+entry.getKey()+"\"= ");
 			try {
-				String expression = entry.getKey();
-				expression = expression.replace(" ", "").replace("(-", "(0-").replace("(+", "(0+");
-				if (expression.charAt(0) == '-' || expression.charAt(0) == '+') {
-					  expression = "0" + expression;
-				}
-			  
-				final char[] input = expression.toCharArray(); //{'(','1','+','1',')'};
-				
-				char[] output = new char[input.length];
-				
-				if(DijkstraAlgorithmCalculator.expressionParser(input, output)) {
-					if (DijkstraAlgorithmCalculator.expressionCalc(output)) {
-						
-						System.out.println("Результат: " + String.valueOf(output) + "=" + DijkstraAlgorithmCalculator.getResult());
-					}
-					else {
-						System.out.println("Ошибка вычисления: " + String.valueOf(output));
-					}
-				}
-		    	assertEquals(entry.getValue(), DijkstraAlgorithmCalculator.getResult(), 0);
+				double result = ExpressionCalculatorFunc.calculateDouble(entry.getKey());
+				String resultStr = new DecimalFormat(Helper.decimalFormat).format(result);
+				String testStr = new DecimalFormat(Helper.decimalFormat).format(entry.getValue());
+		    	System.out.println(resultStr + "; ожидалось: " + testStr);
+		    	assertEquals(entry.getValue(), result, 0);
 		    	
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		}
+	}
+	
+	private static void negativeTestConstructor (String testKey) {
+		int argument = 0;
+		System.out.println("Тест " + testKey);
+		Map <String, Double> map = TestHelper.testCases.get(testKey);
+		for (Map.Entry<String, Double> entry : map.entrySet()) {
+			System.out.print("\""+entry.getKey()+"\"= ");
+			try {
+				double result = ExpressionCalculatorFunc.calculateDouble(entry.getKey());
+				String resultStr = new DecimalFormat(Helper.decimalFormat).format(result);
+				String testStr = new DecimalFormat(Helper.decimalFormat).format(entry.getValue());
+		    	System.out.println(resultStr + "; ожидалось: " + testStr);
+		    	assertEquals(entry.getValue(), argument, 0);
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
@@ -49,12 +53,12 @@ public class DijkstraAlgorithmCalculatorTests {
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		System.out.println("\nТестирование класса DijkstraAlgorithmCalculator");
+		System.out.println("\nТестирование класса ExpressionCalculatorFunc");
 	}
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		System.out.println("Тестирование класса DijkstraAlgorithmCalculator окончено\n");
+		System.out.println("Тестирование класса ExpressionCalculatorFunc окончено\n");
 	}
 
 	@Before
@@ -77,4 +81,23 @@ public class DijkstraAlgorithmCalculatorTests {
 		positiveTestConstructor("B");
 	}
 	
+	@Test
+	public void testC() {
+		positiveTestConstructor("C");
+	}
+	
+	@Test
+	public void testD() {
+		positiveTestConstructor("D");
+	}
+	
+	@Test
+	public void testE() {
+		negativeTestConstructor("E");
+	}
+	
+	@Test
+	public void testF() {
+		negativeTestConstructor("F");
+	}
 }
