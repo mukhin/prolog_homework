@@ -6,20 +6,31 @@ import java.io.InputStreamReader;
 
 public class DijkstraAlgorithmCalculator {
 	
-	private static double result = 0.0;
+	private static double result = 0.0; // Результат вычисления
 	
+	/** Получить результат вычисления
+	 * 	@return result */
 	public static double getResult() {
 		return result;
 	}
 	
+	/** Проверка на соответствие математическому оператору
+	 *	@param c символ
+	 * 	@return результат сравнения */
 	public static boolean isOperator (final char c) {
 		return (c == '+' || c == '-' || c == '/' || c == '*' || c == '!' || c == '%');
 	}
 	
+	/** Проверка на соответствие цифровому символу
+	 * @param c символ
+	 * @return результат сравнения */
 	public static boolean isNumeric (final char c) {
 		return (c >= '0' && c <= '9');
 	}
 	
+	/** Определение приоритета оператора
+	 *	@param op оператор
+	 *	@return приоритет */
 	public static int opPriority(final char op) {//throws Exception 
 	    switch(op) {
 	        case '!':
@@ -41,6 +52,9 @@ public class DijkstraAlgorithmCalculator {
 	    }
 	}
 	
+	/** Определяет левый или правый оператор?
+	 *	@param op оператор
+	 * 	@return результат: левый == true; правый == false */
 	public static boolean opLeftOrRight(final char op) {//throws Exception 
 	    switch(op) {
 	        	// Левоассоциативные операторы
@@ -61,6 +75,9 @@ public class DijkstraAlgorithmCalculator {
 	    }
 	}
 	
+	/** Вычисление количества операндов для оператора
+	 *	@param op оператор
+	 *	@return количество операндов */
 	public static int opArgCount(final char op) {
 	    switch(op) {
 	        case '*':
@@ -75,9 +92,14 @@ public class DijkstraAlgorithmCalculator {
 		return 0;
 	}
 	
-	public static double opCalculate(final double op1, final double op2, final char operation ) {
+	/** Вычисление выражения для оператора
+	 * 	@param op1 левый оператор
+	 * 	@param op2 правый оператор
+	 *	@param operator оператор
+	 *	@return результат вычисления */
+	public static double opCalculate(final double op1, final double op2, final char operator ) {
 		double result = 0.0;
-		switch (operation) {
+		switch (operator) {
 			case ('+'):
 				result = op1 + op2;
 				break;
@@ -100,7 +122,10 @@ public class DijkstraAlgorithmCalculator {
 		return result;
 }
 	
-	/***/
+	/** Разбор исходного математического выражения, перевод в обратную польскую нотацию.
+	 * 	@param input входная строка выражения
+	 * 	@param output выходная очередь
+	 * 	@return результат разбора true -- операция выполнена успешно, false -- операция завершилась с ошибкой */
 	public static boolean expressionParser(final char[] input, char[] output) {//throws Exception 
 	    final int input_end = input.length; //Размер входной очереди
 	    int input_position = 0; //Позиция во входной очереди
@@ -110,7 +135,7 @@ public class DijkstraAlgorithmCalculator {
 	    
 	    char[] stack = new char[input_end]; //Стек операторов
 	    
-	    while(input_position < input_end) {
+	    while(input_position < input_end) { //Основной цикл разбора 
 	        c = input[input_position];
 	        if(c != ' ') {
 	            if(isNumeric(c)) { // Если значение, добавить в очередь вывода
@@ -131,18 +156,18 @@ public class DijkstraAlgorithmCalculator {
 	                    }
 	                }
 	              
-	                stack[stack_position] = c; // положить в стек оператор op1
+	                stack[stack_position] = c; //Положить в стек оператор op1
 	                ++stack_position;
 	            }
-	            else if(c == '(') {// Если токен - левая скобка, положить в стек.
+	            else if(c == '(') { //Если левая скобка, положить в стек.
 	                stack[stack_position] = c;
 	                ++stack_position;
 	            }
-	            else if(c == ')') { // Если токен - правая скобка:
+	            else if(c == ')') { //Если правая скобка:
 	            	
 	                boolean isLeftBracket = false;
 	                
-	                // До появления на вершине стека токена левой скобки перекладывать операторы из стека в очередь вывода.
+	                //До появления на вершине стека левой скобки перекладывать операторы из стека в очередь вывода.
 	                while(stack_position > 0) {
 	                    sc = stack[stack_position - 1];
 	                    
@@ -155,55 +180,58 @@ public class DijkstraAlgorithmCalculator {
 	                        stack_position--;
 	                    }
 	                }
-	                // Если стек кончится до нахождения левой скобки, то была пропущена скобка.
-	                if(!isLeftBracket) {
-	                	System.out.println("Пропущена левая скобка");//throw new Exception("Пропущена левая скобка");
+	                
+	                if(!isLeftBracket) { //Если стек кончился до появления левой скобки.
+	                	System.out.println("Ошибка: Пропущена левая скобка");//throw new Exception("Пропущена левая скобка");
 	                	return false;
 	                }
-	                stack_position--; // Пропустить левую скобку.
+	                stack_position--; //Пропустить левую скобку.
 	            }
 	            else {
-	            	System.out.println("Неизвестный символ");//throw new Exception("Неизвестный символ");
+	            	System.out.println("Ошибка: Неизвестный символ"); //throw new Exception("Неизвестный символ");
 	            	return false;
 	            }
 	        }
 	        ++input_position;
 	    }
-	    // Когда не осталось токенов во входной очереди, разобрать содержимое стека:
+	    // Когда входная очередь пуста, добавить в выходную очередь содержимое стека операторов:
 	    while(stack_position > 0) {
 	        sc = stack[stack_position - 1];
 	        
 	        if(sc == '(' || sc == ')') {
-	        	System.out.println("Пропущены значения в скобках");//throw new Exception("Пропущены значения в скобках");
+	        	System.out.println("Ошибка: Пустые скобки");//throw new Exception("Пропущены значения в скобках");
 	            return false;
 	        }
 	        output[output_position] = sc; ++output_position;
 	        --stack_position;
 	    }
 
-	  //  output[output_position] = 0;//Добавить ноль к строке
 	    return true;
 	}
 	
+	/** Вычисление выражения в обратной польской нотации
+	 * 	@param input
+	 * 	@return результат выполнения true -- операция выполнена успешно, false -- операция завершилась с ошибкой */
 	public static boolean expressionCalc(final char[] input) {
 	    
-	    result = 0.0;
 		final int input_end = input.length; //Размер входной очереди
 	    int input_position = 0; //Позиция во входной очереди
 	    int stack_position = 0;	//Позиция в стеке результата
 	    char c; //Значение входной очереди
 	    
+	    result = 0.0;
+	    
 	    double[] stack = new double[input_end]; //Стек операторов
 	
-	    while(input_position < input_end) {// Пока не достигнут конец очереди
+	    while(input_position < input_end) { //Пока не достигнут конец очереди
 	    	
-	        c = input[input_position]; // Прочитать следующее значение
+	        c = input[input_position]; //Прочитать следующее значение
 	        
-	        if(isNumeric(c)) { // Если цифра, поместить в стек
+	        if(isNumeric(c)) { //Если число, поместить в стек
 	            stack[stack_position] = (double) (c - '0');
 	            ++stack_position;
 	        }
-	        else if(isOperator(c)) { // Если оператор  	
+	        else if(isOperator(c)) { //Если оператор, определить операнды, вычислить подвыражение	
 	        	
 				int nargs = opArgCount(c);
 				if(stack_position < nargs) {
@@ -213,21 +241,20 @@ public class DijkstraAlgorithmCalculator {
 
 				if(nargs == 1) {
 					result = opCalculate(stack[stack_position - 1], 0, c);
-					stack_position--;
 				}
 				else {
 					result = opCalculate(stack[stack_position - 2], stack[stack_position - 1], c);
-	                stack_position -= 2;
-
 				}
-
-	            stack[stack_position] = result; //Результат вычислений помещается в стек
+				
+				stack_position -= nargs;
+	            stack[stack_position] = result; //Результат вычисления помещается в стек на место первого операнда подвыражения
+	            
 	            ++stack_position;
 	        }
 	        ++input_position;
 	    }
 
-		if(stack_position == 1) {//Если в стеке осталось одно значение, оно и есть результат вычисления.
+		if(stack_position == 1) {//Если в стеке осталось одно значение, оно и есть результат вычисления исходного выражения.
 			stack_position--;
 			result = stack[stack_position];
 			return true;
@@ -240,7 +267,7 @@ public class DijkstraAlgorithmCalculator {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in)); 
 	    String expression = reader.readLine(); 
 		expression = expression.replace(" ", "").replace("(-", "(0-").replace("(+", "(0+");
-		if (expression.charAt(0) == '-' || expression.charAt(0) == '+') {
+		if (expression.charAt(0) == '-' || expression.charAt(0) == '+') {// Если выражение начинается со знака, добавить "0"
 			  expression = "0" + expression;
 		}
 	  
