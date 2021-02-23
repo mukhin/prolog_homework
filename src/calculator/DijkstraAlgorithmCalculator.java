@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-/** В качестве значений операторов можно использовать многоразрядные числа. */
+/** В качестве значений операндов можно использовать многоразрядные числа. */
 public class DijkstraAlgorithmCalculator {
 	
 	private static double result = 0.0; // Результат вычисления
