@@ -264,13 +264,22 @@ public class DijkstraAlgorithmCalculatorSingle {
 		return false;
 	}
 	
-	public static void main(String[] args) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in)); 
-	    String expression = reader.readLine(); 
+	/** Подготовка строки выражения перед выполнением вычислений 
+	 *	@param expression исходное выражение
+	 	@return результат преобразования */
+	public static String prepareExpressionString(String expression) {
 		expression = expression.replace(" ", "").replace("(-", "(0-").replace("(+", "(0+");
-		if (expression.charAt(0) == '-' || expression.charAt(0) == '+') {// Если выражение начинается со знака, добавить "0"
+		// Если выражение начинается со знака + или -, добавить "0"
+		if (expression.charAt(0) == '-' || expression.charAt(0) == '+') {
 			  expression = "0" + expression;
 		}
+		
+		return expression;
+	}
+	
+	public static void main(String[] args) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in)); 
+	    String expression = prepareExpressionString(reader.readLine());
 	  
 		final char[] input = expression.toCharArray(); //{'(','1','+','1',')'};
 		
