@@ -6,19 +6,19 @@ public class ExampleSingle {//В качестве математического
 
 	public static void main(String[] args) {
 	  
-		String expression = DijkstraAlgorithmCalculatorSingle.prepareExpressionString(args[0]);
+		String expression = DijkstraCalculatorSingle.prepareExpressionString(args[0]);
 
 		final char[] input = expression.toCharArray();
 		char[] output = new char[input.length];
 		
 		System.out.println("Исходное выражение: " + String.valueOf(input));
 	  
-		if(DijkstraAlgorithmCalculatorSingle.expressionParser(input, output)){
-			if (DijkstraAlgorithmCalculatorSingle.expressionCalc(output)) {
+		if(DijkstraCalculatorSingle.expressionParser(input, output)){
+			if (DijkstraCalculatorSingle.expressionCalc(output)) {
 				System.out.println("Результат: "
 						+ String.valueOf(output)
 						+ "="
-						+ DijkstraAlgorithmCalculatorSingle.getResult());
+						+ DijkstraCalculatorSingle.getResult());
 			}
 			else {
 				System.out.println("Ошибка вычисления: " + String.valueOf(output));

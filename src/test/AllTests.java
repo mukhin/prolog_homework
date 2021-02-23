@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({DijkstraCalculatorTests.class, DijkstraAlgorithmCalculatorSingleTests.class})
+@SuiteClasses({DijkstraCalculatorTests.class, DijkstraCalculatorSingleTests.class})
 public class AllTests {
 
 }

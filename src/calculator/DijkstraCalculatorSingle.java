@@ -4,8 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-/** В качестве значений операторов можно использовать только цифры. */
-public class DijkstraAlgorithmCalculatorSingle {
+/** В качестве значений операндов можно использовать только цифры. */
+public class DijkstraCalculatorSingle {
 	
 	private static double result = 0.0; // Результат вычисления
 	
@@ -47,7 +47,7 @@ public class DijkstraAlgorithmCalculatorSingle {
 	        	return 1;
 	        
 	        default: {
-	        	System.out.println("Неизвестный оператор: \"" + op + "\"");//throw new Exception("Неизвестный оператор");
+	        	System.out.println("Ошибка: Неизвестный оператор: \"" + op + "\"");//throw new Exception("Ошибка: Неизвестный оператор");
 	        	return 0;
 	        }
 	    }
@@ -70,7 +70,7 @@ public class DijkstraAlgorithmCalculatorSingle {
 	        	return false;
 	        
 	        default: {
-	        	System.out.println("Неизвестный оператор: \"" + op + "\"");//throw new Exception("Неизвестный оператор");
+	        	System.out.println("Ошибка: Неизвестный оператор: \"" + op + "\"");//throw new Exception("Ошибка: Неизвестный оператор");
 	        	return false;
 	        }
 	    }
@@ -132,7 +132,7 @@ public class DijkstraAlgorithmCalculatorSingle {
 	    int input_position = 0; //Позиция во входной очереди
 	    int output_position = 0;//Позиция в выходной очереди
 	    int stack_position = 0;	//Позиция в стеке операторов
-	    char c, sc; //Служебные переменные, значения входной очереди и стека в текущей позиции
+	    char c, sc; //Служебные переменные, временное хранение значений входной очереди и стека
 	    
 	    char[] stack = new char[input_end]; //Стек операторов
 	    
@@ -183,13 +183,13 @@ public class DijkstraAlgorithmCalculatorSingle {
 	                }
 	                
 	                if(!isLeftBracket) { //Если стек кончился до появления левой скобки.
-	                	System.out.println("Ошибка: Пропущена левая скобка");//throw new Exception("Пропущена левая скобка");
+	                	System.out.println("Ошибка: Отсутствует левая скобка");//throw new Exception("Ошибка: Отсутствует левая скобка");
 	                	return false;
 	                }
 	                stack_position--; //Пропустить левую скобку.
 	            }
 	            else {
-	            	System.out.println("Ошибка: Неизвестный символ"); //throw new Exception("Неизвестный символ");
+	            	System.out.println("Ошибка: Неизвестный символ"); //throw new Exception("Ошибка: Неизвестный символ");
 	            	return false;
 	            }
 	        }
@@ -200,7 +200,7 @@ public class DijkstraAlgorithmCalculatorSingle {
 	        sc = stack[stack_position - 1];
 	        
 	        if(sc == '(' || sc == ')') {
-	        	System.out.println("Ошибка: Пустые скобки");//throw new Exception("Пропущены значения в скобках");
+	        	System.out.println("Ошибка: Пустые скобки");//throw new Exception("Ошибка: Пустые скобки");
 	            return false;
 	        }
 	        output[output_position] = sc; ++output_position;
@@ -286,8 +286,8 @@ public class DijkstraAlgorithmCalculatorSingle {
 		char[] output = new char[input.length];
 		result = 0.0;
 		
-		if(DijkstraAlgorithmCalculatorSingle.expressionParser(input, output)) {
-			if (DijkstraAlgorithmCalculatorSingle.expressionCalc(output)) {
+		if(DijkstraCalculatorSingle.expressionParser(input, output)) {
+			if (DijkstraCalculatorSingle.expressionCalc(output)) {
 				System.out.println("Результат: " + String.valueOf(output) + "=" + result);
 			}
 			else {
