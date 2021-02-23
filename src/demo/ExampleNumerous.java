@@ -2,7 +2,7 @@ package demo;
 
 import calculator.*;
 
-public class Example1 {//В качестве математического выражения используется строка входного аргумента 
+public class ExampleNumerous {//В качестве математического выражения используется строка входного аргумента 
 
 	public static void main(String[] args) {
 	  
