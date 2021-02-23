@@ -346,11 +346,11 @@ public class DijkstraAlgorithmCalculator {
 	public static void main(String[] args) throws IOException {
 		
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in)); 
-	    String expression = prepareExpressionString(reader.readLine()); //Подготовка исходное выражение
+	    String expression = prepareExpressionString(reader.readLine()); //Подготовка исходного выражения
 	    
 	    //System.out.println(expression);
 		
-			//Преобразование входного выражения в массив символов {'(','1','+','1',')'};
+			//Преобразование входного выражения в массив символов
 		final char[] input = expression.toCharArray();
 		
 		char[][] output = new char[input.length][input.length]; //Выходная очередь 
