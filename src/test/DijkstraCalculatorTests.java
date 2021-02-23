@@ -12,9 +12,9 @@ import java.util.Map;
 
 import calculator.*;
 
-public class DijkstraAlgorithmCalculatorTests {
+public class DijkstraCalculatorTests {
 	
-	private static String className = DijkstraAlgorithmCalculatorSingle.class.getSimpleName();
+	private static String className = DijkstraCalculator.class.getSimpleName();
 	
 	private static void positiveTestConstructor (String testKey) {
 		System.out.println("Тест " + testKey);
@@ -24,19 +24,19 @@ public class DijkstraAlgorithmCalculatorTests {
 			try {
 				String expression = entry.getKey();
 				String testStr = Double.toString(entry.getValue());
-				expression = DijkstraAlgorithmCalculator.prepareExpressionString(expression);
+				expression = DijkstraCalculator.prepareExpressionString(expression);
 			  
 				final char[] input = expression.toCharArray();
 				
 				char[][] output = new char[input.length][input.length];
 				
-				if(DijkstraAlgorithmCalculator.expressionParser(input, output)) {
-					if (DijkstraAlgorithmCalculator.expressionCalc(output)) {
+				if(DijkstraCalculator.expressionParser(input, output)) {
+					if (DijkstraCalculator.expressionCalc(output)) {
 						System.out.print("Результат: ");
 						for (int i = 0; i < output.length; i++) {
 							System.out.print(String.valueOf(output[i]));
 						}
-						System.out.println("=" + DijkstraAlgorithmCalculator.getResult()
+						System.out.println("=" + DijkstraCalculator.getResult()
 							+ "; Эталонное значение: " + testStr);
 					}
 					else {
@@ -47,7 +47,7 @@ public class DijkstraAlgorithmCalculatorTests {
 						System.out.println("");
 					}
 				}
-		    	assertEquals(entry.getValue(), DijkstraAlgorithmCalculator.getResult(), 0);
+		    	assertEquals(entry.getValue(), DijkstraCalculator.getResult(), 0);
 		    	
 			} catch (Exception e) {
 				System.out.println(e.getMessage());

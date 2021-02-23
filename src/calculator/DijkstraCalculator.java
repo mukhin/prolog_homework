@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /** В качестве значений операндов можно использовать многоразрядные числа. */
-public class DijkstraAlgorithmCalculator {
+public class DijkstraCalculator {
 	
 	private static double result = 0.0; // Результат вычисления
 	
@@ -47,7 +47,7 @@ public class DijkstraAlgorithmCalculator {
 	        	return 1;
 	        
 	        default: {
-	        	System.out.println("Неизвестный оператор: \"" + op + "\"");//throw new Exception("Неизвестный оператор");
+	        	System.out.println("Ошибка: Неизвестный оператор: \"" + op + "\"");//throw new Exception("Ошибка: Неизвестный оператор");
 	        	return 0;
 	        }
 	    }
@@ -70,7 +70,7 @@ public class DijkstraAlgorithmCalculator {
 	        	return false;
 	        
 	        default: {
-	        	System.out.println("Неизвестный оператор: \"" + op + "\"");//throw new Exception("Неизвестный оператор");
+	        	System.out.println("Ошибка: Неизвестный оператор: \"" + op + "\"");//throw new Exception("Ошибка: Неизвестный оператор");
 	        	return false;
 	        }
 	    }
@@ -129,9 +129,8 @@ public class DijkstraAlgorithmCalculator {
 	public static double convertArrayToDouble(final char[] numArray) {
 		double result = 0.0;
 		int length = numArray.length - 1;
-		for(int i = length, j = 1; i >= 0; i--) { //result = 1*numArray[length]+10*numArray[length-1]+...
-				//System.out.println("numCalculate, i = " + i + " length = " + length + " numArray[" + (i) + "] = " + numArray[i]);
-			result += j * (numArray[i] - '0');
+		for(int i = length, j = 1; i >= 0; i--) { 
+			result += j * (numArray[i] - '0');// 1 * numArray[length] + 10 * numArray[length-1]+...
 			j *= 10;
 		}
 		return result;
@@ -145,7 +144,7 @@ public class DijkstraAlgorithmCalculator {
 	 * @return результат выполнения операции */
 	public static boolean fillArray(final char[] input, char[] output, int input_position) {
 		
-		if (input.length == 0 //Проверка размерности массивов
+		if (input.length == 0 //Проверка одинаковости размерности массивов
 			|| output.length == 0
 			|| input.length <= (input_position + output.length - 2)) {
 			return false;
@@ -168,7 +167,7 @@ public class DijkstraAlgorithmCalculator {
 	    int stack_position = 0;	//Позиция в стеке операторов
 	    int num_position = 0; //Позиция в масиве хранения числа
 	    boolean num_flag = false; //Признак числа
-	    char c, sc; //Служебные переменные, значения входной очереди и стека в текущей позиции
+	    char c, sc; //Служебные переменные, временное хранение значений входной очереди и стека
 	    
 	    char[] stack = new char[input_end]; //Стек операторов
 	    
@@ -228,31 +227,31 @@ public class DijkstraAlgorithmCalculator {
 	            		}
 	            	}
 	            	
-	                boolean isLeftBracket = false; // Признак наличия левой скобки
+	                boolean is_left_bracket = false; // Признак наличия левой скобки
 	                
 	                //До появления на вершине стека левой скобки перекладывать операторы из стека в очередь вывода.
 	                while(stack_position > 0) {
 	                    sc = stack[stack_position - 1];
 	                    
 	                    if(sc == '(') {
-	                    	isLeftBracket = true;
+	                    	is_left_bracket = true;
 	                        break;
 	                    }
 	                    else {
-	                    	char [] num_stack = new char[1]; num_stack[0] = sc;
+	                    	char [] num_stack = { sc };
 	                        output[output_position] = num_stack; ++output_position;
 	                        stack_position--;
 	                    }
 	                }
 	                
-	                if(!isLeftBracket) { //Если стек кончился до появления левой скобки:
-	                	System.out.println("Ошибка: Пропущена левая скобка");//throw new Exception("Пропущена левая скобка");
+	                if(!is_left_bracket) { //Если стек кончился до появления левой скобки:
+	                	System.out.println("Ошибка: Пропущена отсутствует скобка");//throw new Exception("Ошибка: Пропущена отсутствует скобка");
 	                	return false;
 	                }
-	                stack_position--; //Пропустить левую скобку.
+	                stack_position--; //Пропустить левую скобку
 	            }
 	            else {
-	            	System.out.println("Ошибка: Неизвестный символ"); //throw new Exception("Неизвестный символ");
+	            	System.out.println("Ошибка: Неизвестный символ"); //throw new Exception("Ошибка: Неизвестный символ");
 	            	return false;
 	            }
 	        }
@@ -263,11 +262,10 @@ public class DijkstraAlgorithmCalculator {
 	        sc = stack[stack_position - 1];
 	        
 	        if(sc == '(' || sc == ')') {
-	        	System.out.println("Ошибка: Пустые скобки");//throw new Exception("Пропущены значения в скобках");
+	        	System.out.println("Ошибка: Пустые скобки");//throw new Exception("Ошибка: Пустые скобки");
 	            return false;
 	        }
-        	char [] num_stack = new char[1];
-        	num_stack[0] = sc;
+        	char [] num_stack = { sc };
             output[output_position] = num_stack; ++output_position;
 	        --stack_position;
 	    }
@@ -283,7 +281,7 @@ public class DijkstraAlgorithmCalculator {
 		final int input_end = input.length; //Длина входной очереди
 	    int input_position = 0; //Позиция во входной очереди
 	    int stack_position = 0;	//Позиция в стеке результата
-	    char[] c; //Служебная переменная, -- значение элемента входной очереди
+	    char[] c; //Служебная переменная, -- временное хранение элемента входной очереди
 	    
 	    result = 0.0; //Перед очередным вычислением результат обнуляется
 	    
@@ -356,8 +354,8 @@ public class DijkstraAlgorithmCalculator {
 		char[][] output = new char[input.length][input.length]; //Выходная очередь 
 		result = 0.0;
 		
-		if(DijkstraAlgorithmCalculator.expressionParser(input, output)) {
-			if (DijkstraAlgorithmCalculator.expressionCalc(output)) {
+		if(DijkstraCalculator.expressionParser(input, output)) {
+			if (DijkstraCalculator.expressionCalc(output)) {
 				System.out.print("Результат: ");
 				for (int i = 0; i < output.length; i++) {
 					System.out.print(String.valueOf(output[i]));

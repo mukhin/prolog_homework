@@ -2,24 +2,24 @@ package demo;
 
 import calculator.*;
 
-public class ExampleNumerous {//В качестве математического выражения используется строка входного аргумента 
+public class ExampleCalculator {//В качестве математического выражения используется строка входного аргумента 
 
 	public static void main(String[] args) {
 	  
-		String expression = DijkstraAlgorithmCalculator.prepareExpressionString(args[0]); //Исходное выражение
+		String expression = DijkstraCalculator.prepareExpressionString(args[0]); //Исходное выражение
 
 		final char[] input = expression.toCharArray();
 		char[][] output = new char[input.length][input.length];
 		
 		System.out.println("Исходное выражение: " + String.valueOf(input));
 	  
-		if(DijkstraAlgorithmCalculator.expressionParser(input, output)){
-			if (DijkstraAlgorithmCalculator.expressionCalc(output)) {
+		if(DijkstraCalculator.expressionParser(input, output)){
+			if (DijkstraCalculator.expressionCalc(output)) {
 				System.out.print("Результат: ");
 				for (int i = 0; i < output.length; i++) {
 					System.out.print(String.valueOf(output[i]));
 				}
-				System.out.println("=" + DijkstraAlgorithmCalculator.getResult());
+				System.out.println("=" + DijkstraCalculator.getResult());
 			}
 			else {
 				System.out.print("Ошибка вычисления: ");
