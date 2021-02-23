@@ -14,6 +14,8 @@ import calculator.*;
 
 public class DijkstraAlgorithmCalculatorTests {
 	
+	private static String className = DijkstraAlgorithmCalculatorSingle.class.getSimpleName();
+	
 	private static void positiveTestConstructor (String testKey) {
 		System.out.println("Тест " + testKey);
 		Map <String, Double> map = TestHelper.testCases.get(testKey);
@@ -55,12 +57,12 @@ public class DijkstraAlgorithmCalculatorTests {
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		System.out.println("\nТестирование класса DijkstraAlgorithmCalculator");
+		System.out.println("\nТестирование класса " + className);
 	}
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		System.out.println("Тестирование класса DijkstraAlgorithmCalculator окончено\n");
+		System.out.println("Тестирование класса " + className + " окончено\n");
 	}
 
 	@Before
