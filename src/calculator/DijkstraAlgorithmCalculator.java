@@ -166,12 +166,11 @@ public class DijkstraAlgorithmCalculator {
 	    int input_position = 0; //Позиция во входной очереди
 	    int output_position = 0;//Позиция в выходной очереди
 	    int stack_position = 0;	//Позиция в стеке операторов
-	    int num_position = 0;
+	    int num_position = 0; //Позиция в масиве хранения числа
+	    boolean num_flag = false; //Признак числа
 	    char c, sc; //Служебные переменные, значения входной очереди и стека в текущей позиции
 	    
 	    char[] stack = new char[input_end]; //Стек операторов
-	    
-	    boolean num_flag = false;
 	    
 	    while(input_position < input_end) { //Основной цикл разбора 
 	        c = input[input_position];
@@ -179,8 +178,9 @@ public class DijkstraAlgorithmCalculator {
 	            if(isNumeric(c)) { // Если значение, инкрементировать счётчик цифр числового значения
 	                num_position++; num_flag = true;
 	            }
-	            else if(isOperator(c)) {	            	
-	            	if (num_flag == true) {
+	            else if(isOperator(c)) {
+	            	//Если перед этим было число, подготовить массив значений и добавить его в выходную очередь
+	            	if (num_flag == true) { //
 	            		char [] num_stack = new char[num_position];
 	            		if (fillArray(input, num_stack, input_position)) {
 	            			output[output_position] = num_stack; ++output_position;
@@ -192,13 +192,13 @@ public class DijkstraAlgorithmCalculator {
 	            	}
 	            	
 	                while(stack_position > 0) {
+	                	
 	                    sc = stack[stack_position - 1];
-
 	                    if(isOperator(sc)
 	                    	&& ((opLeftOrRight(c) && (opPriority(c) <= opPriority(sc)))
 	                    	|| (!opLeftOrRight(c) && (opPriority(c) < opPriority(sc))))) {
-	                    	
-	                    	char [] num_stack = new char[1]; num_stack[0] = sc;
+	                    		//Подготовить массив, заполнить значением оператора, добавить массив в выходную очередь
+	                    	char [] num_stack = { sc };
 	                        output[output_position] = num_stack; ++output_position;
 	                        stack_position--;
 	                    }
@@ -215,7 +215,7 @@ public class DijkstraAlgorithmCalculator {
 	                ++stack_position;
 	            }
 	            else if(c == ')') { //Если правая скобка:
-	            	
+	            		//Если перед этим было число, подготовить массив значений и добавить его в выходную очередь
 	            	if (num_flag == true) {
 	            		char [] num_stack = new char[num_position];
 	            		if (fillArray(input, num_stack, input_position)) {
@@ -223,11 +223,12 @@ public class DijkstraAlgorithmCalculator {
 	            			num_flag = false; num_position = 0;
 	            		}
 	            		else {
+	            			System.out.println("Ошибка: Не удалось записать число в выходную очередь");
 	            			return false;
 	            		}
 	            	}
 	            	
-	                boolean isLeftBracket = false;
+	                boolean isLeftBracket = false; // Признак наличия левой скобки
 	                
 	                //До появления на вершине стека левой скобки перекладывать операторы из стека в очередь вывода.
 	                while(stack_position > 0) {
@@ -244,7 +245,7 @@ public class DijkstraAlgorithmCalculator {
 	                    }
 	                }
 	                
-	                if(!isLeftBracket) { //Если стек кончился до появления левой скобки.
+	                if(!isLeftBracket) { //Если стек кончился до появления левой скобки:
 	                	System.out.println("Ошибка: Пропущена левая скобка");//throw new Exception("Пропущена левая скобка");
 	                	return false;
 	                }
@@ -298,12 +299,12 @@ public class DijkstraAlgorithmCalculator {
 	        }
 	        else if(isOperator(c[0])) { //Если оператор, определить операнды, вычислить подвыражение	
 	        	
-				int nargs = opArgCount(c[0]);
+				int nargs = opArgCount(c[0]); //Определение количества аргументов
 				if(stack_position < nargs) {
 					System.out.println("Ошибка: недостаточно аргументов: " + stack_position + " Ожидалось: " + nargs);
 					return false;
 				}
-
+					//Вычисление результата
 				if(nargs == 1) {
 					result = opCalculate(stack[stack_position - 1], 0, c[0]);
 				}
@@ -318,8 +319,8 @@ public class DijkstraAlgorithmCalculator {
 	        }
 	        ++input_position;
 	    }
-
-		if(stack_position == 1) {//Если в стеке осталось одно значение, оно и есть результат вычисления исходного выражения.
+	    	//Если в стеке осталось одно значение, это и есть результат вычисления исходного выражения.
+		if(stack_position == 1) {
 			stack_position--;
 			result = stack[stack_position];
 			return true;
@@ -345,7 +346,7 @@ public class DijkstraAlgorithmCalculator {
 	public static void main(String[] args) throws IOException {
 		
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in)); 
-	    String expression = prepareExpressionString(reader.readLine()); //Исходное выражение
+	    String expression = prepareExpressionString(reader.readLine()); //Подготовка исходное выражение
 	    
 	    //System.out.println(expression);
 		
