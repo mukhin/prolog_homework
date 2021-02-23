@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+/** В качестве значений можно использовать многоразрядные числа*/
 public class DijkstraAlgorithmCalculator {
 	
 	private static double result = 0.0; // Результат вычисления
@@ -278,20 +279,20 @@ public class DijkstraAlgorithmCalculator {
 	 * 	@return результат выполнения true -- операция выполнена успешно, false -- операция завершилась с ошибкой */
 	public static boolean expressionCalc(final char[][] input) {
 	    
-		final int input_end = input.length; //Размер входной очереди
+		final int input_end = input.length; //Длина входной очереди
 	    int input_position = 0; //Позиция во входной очереди
 	    int stack_position = 0;	//Позиция в стеке результата
-	    char[] c; //Значение входной очереди
+	    char[] c; //Служебная переменная, -- значение элемента входной очереди
 	    
-	    result = 0.0;
+	    result = 0.0; //Перед очередным вычислением результат обнуляется
 	    
 	    double[] stack = new double[input_end]; //Стек результирующих значений
 	
 	    while(input_position < input_end) { //Пока не достигнут конец очереди
 	    	
-	        c = input[input_position]; //Прочитать следующее значение
+	        c = input[input_position]; //Получить следующее значение
 	        
-	        if(isNumeric(c[0])) { //Если массив начинается с цифры -- число; преобразовать в значение, поместить в стек
+	        if(isNumeric(c[0])) { //Если массив начинается с цифры, преобразовать в число, поместить в стек
 	            stack[stack_position] = convertArrayToDouble(c);
 	            ++stack_position;
 	        }
@@ -327,6 +328,9 @@ public class DijkstraAlgorithmCalculator {
 		return false;
 	}
 	
+	/** Подготовка строки выражения перед выполнением вычислений 
+	 *	@param expression исходное выражение
+	 	@return результат преобразования */
 	public static String prepareExpressionString(String expression) {
 		expression = expression.replace(" ", "").replace("(-", "(0-").replace("(+", "(0+");
 		// Если выражение начинается со знака + или -, добавить "0"
