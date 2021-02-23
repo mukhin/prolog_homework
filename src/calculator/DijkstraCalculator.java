@@ -245,7 +245,7 @@ public class DijkstraCalculator {
 	                }
 	                
 	                if(!is_left_bracket) { //Если стек кончился до появления левой скобки:
-	                	System.out.println("Ошибка: Пропущена отсутствует скобка");//throw new Exception("Ошибка: Пропущена отсутствует скобка");
+	                	System.out.println("Ошибка: Отсутствует скобка");//throw new Exception("Ошибка: Пропущена отсутствует скобка");
 	                	return false;
 	                }
 	                stack_position--; //Пропустить левую скобку
