@@ -18,12 +18,13 @@ public class DijkstraAlgorithmCalculatorTests {
 		System.out.println("Тест " + testKey);
 		Map <String, Double> map = TestHelper.testCases.get(testKey);
 		for (Map.Entry<String, Double> entry : map.entrySet()) {
-			System.out.print("\""+entry.getKey()+"\"= ");
+			System.out.print("\""+entry.getKey()+"\" ");
 			try {
 				String expression = entry.getKey();
+				String testStr = Double.toString(entry.getValue());
 				expression = DijkstraAlgorithmCalculator.prepareExpressionString(expression);
 			  
-				final char[] input = expression.toCharArray(); //{'(','1','+','1',')'};
+				final char[] input = expression.toCharArray();
 				
 				char[][] output = new char[input.length][input.length];
 				
@@ -33,7 +34,8 @@ public class DijkstraAlgorithmCalculatorTests {
 						for (int i = 0; i < output.length; i++) {
 							System.out.print(String.valueOf(output[i]));
 						}
-						System.out.println("=" + DijkstraAlgorithmCalculator.getResult());
+						System.out.println("=" + DijkstraAlgorithmCalculator.getResult()
+							+ "; Эталонное значение: " + testStr);
 					}
 					else {
 						System.out.print("Ошибка вычисления: ");

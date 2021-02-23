@@ -20,22 +20,21 @@ public class DijkstraAlgorithmCalculatorSingleTests {
 		System.out.println("Тест " + testKey);
 		Map <String, Double> map = TestHelper.testCases.get(testKey);
 		for (Map.Entry<String, Double> entry : map.entrySet()) {
-			System.out.print("\""+entry.getKey()+"\"= ");
+			System.out.print("\""+entry.getKey()+"\" ");
 			try {
 				String expression = entry.getKey();
-				expression = expression.replace(" ", "").replace("(-", "(0-").replace("(+", "(0+");
-				if (expression.charAt(0) == '-' || expression.charAt(0) == '+') {
-					  expression = "0" + expression;
-				}
+				String testStr = Double.toString(entry.getValue());
+				expression = DijkstraAlgorithmCalculatorSingle.prepareExpressionString(expression);
 			  
-				final char[] input = expression.toCharArray(); //{'(','1','+','1',')'};
+				final char[] input = expression.toCharArray();
 				
 				char[] output = new char[input.length];
 				
 				if(DijkstraAlgorithmCalculatorSingle.expressionParser(input, output)) {
 					if (DijkstraAlgorithmCalculatorSingle.expressionCalc(output)) {
-						
-						System.out.println("Результат: " + String.valueOf(output) + "=" + DijkstraAlgorithmCalculatorSingle.getResult());
+						System.out.println("Результат: " + String.valueOf(output)
+							+ "=" + DijkstraAlgorithmCalculatorSingle.getResult()
+							+ "; Эталонное значение: " + testStr);
 					}
 					else {
 						System.out.println("Ошибка вычисления: " + String.valueOf(output));
