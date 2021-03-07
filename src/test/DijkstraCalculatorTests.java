@@ -9,6 +9,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Map;
+import java.util.Stack;
 
 import calculator.*;
 
@@ -18,36 +19,25 @@ public class DijkstraCalculatorTests {
 	
 	private static void positiveTestConstructor (String testKey) {
 		System.out.println("Тест " + testKey);
+		
+		Parser p = new Parser();
+		Calculator c = new Calculator();
 		Map <String, Double> map = TestHelper.testCases.get(testKey);
 		for (Map.Entry<String, Double> entry : map.entrySet()) {
-			System.out.print("\""+entry.getKey()+"\" ");
+			System.out.print("\""+entry.getKey()+"\"");
 			try {
 				String expression = entry.getKey();
 				String testStr = Double.toString(entry.getValue());
-				expression = DijkstraCalculator.prepareExpressionString(expression);
-			  
-				final char[] input = expression.toCharArray();
+				String calc_expression = Helper.prepareExpressionString(expression);
 				
-				char[][] output = new char[input.length][input.length];
-				
-				if(DijkstraCalculator.expressionParser(input, output)) {
-					if (DijkstraCalculator.expressionCalc(output)) {
-						System.out.print("Результат: ");
-						for (int i = 0; i < output.length; i++) {
-							System.out.print(String.valueOf(output[i]));
-						}
-						System.out.println("=" + DijkstraCalculator.getResult()
-							+ "; Эталонное значение: " + testStr);
-					}
-					else {
-						System.out.print("Ошибка вычисления: ");
-						for (int i = 0; i < output.length; i++) {
-							System.out.print(String.valueOf(output[i]));
-						}
-						System.out.println("");
-					}
-				}
-		    	assertEquals(entry.getValue(), DijkstraCalculator.getResult(), 0);
+			    Stack<String> output = p.parse(calc_expression);
+			    double result = c.calculate(output);
+			    
+				System.out.println("= " + result
+						+ "; Польская нотация: " + output
+						+ "; Эталонное значение: " + testStr);
+
+		    	assertEquals(entry.getValue(), result, 0);
 		    	
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
