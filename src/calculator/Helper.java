@@ -4,14 +4,35 @@ import java.util.*;
 
 /** Константы и вспомогательные функции */
 public class Helper {
+	
+	/** Подготовка строки выражения перед выполнением вычислений 
+	 *	@param expression исходное выражение
+	 	@return результат преобразования */
+	public static String prepareExpressionString(String expression) {
+		expression = expression.replace(" ", "").replace("(-", "(0-").replace("(+", "(0+");
+		// Если выражение начинается со знака + или -, добавить "0"
+		if (expression.charAt(0) == '-' || expression.charAt(0) == '+') {
+			  expression = "0" + expression;
+		}
+			//Всё выражение обрамляется в скобки, поскольку за каждым числом должен следовать оператор 
+		expression = "(" + expression + ")";
+		return expression;
+	}
+	
+	/** Проверка на соответствие цифровому символу
+	 * @param c символ
+	 * @return результат сравнения */
+	public static boolean isNumeric (final Character c) {
+		return (c.charValue() >= '0' && c.charValue() <= '9');
+	}	
 		
-	/** Перечисление математических операторов и функций.
-	 * 	Используется для идентификации математических символов и функций.*/
+	/** Перечисление математических операторов */
 	public static enum OPERATOR {
 		
 		// Операторы + скобки
-		UNARY_MINUS(3, 1, false), PLUS(1, 2, true), MINUS(1, 2, true), MULTIPLY(2, 2, true), DIVIDE(2, 2, true), MOD(2, 2, true)
-		,LEFT_BRACKET(), RIGHT_BRACKET(), NUMBER(), END();
+		UNARY_MINUS(3, 1, false, true), PLUS(1, 2, true, true), MINUS(1, 2, true, true)
+		,MULTIPLY(2, 2, true, true), DIVIDE(2, 2, true, true), MOD(2, 2, true, true)
+		,LEFT_BRACKET(), RIGHT_BRACKET(), NUMERIC(), END();
 		
 		/** Приоритет оператора */
 		int priority = 0;
@@ -22,20 +43,25 @@ public class Helper {
 		/** Признак левоассоциативного оператора */
 		boolean is_left = false;
 		
-		/** Конструктор по умолчанию
+		/** Признак оператора */
+		boolean is_operator = false;
+		
+		/** Конструктор по-умолчанию
 		 *  Оператор или разделитель */
 		OPERATOR() {
-			priority = 0;
-			arguments = 0;
-			is_left = false;
+			this (0, 0, false, false);
 		}
 		
 		/** Конструктор
-		 * @param arguments -- определяет количество аргументов функции */
-		OPERATOR(int priority, int arguments, boolean is_left) {
+		 * @param priority -- приоритет оператора
+		 * @param arguments -- определяет количество аргументов функции
+		 * @param is_left -- признак левоассоциативного оператора
+		 * @param is_operator -- признак оператора */
+		OPERATOR(int priority, int arguments, boolean is_left, boolean is_operator) {
 			this.priority = priority;
 			this.arguments = arguments;
 			this.is_left = is_left;
+			this.is_operator = is_operator;
 		}
 		
 		/** Получить количество аргументов оператора
@@ -50,11 +76,17 @@ public class Helper {
 			return arguments;
 		}
 		
-		/** Определяет левый или правый оператор?
-		 *	@param op оператор
+		/** Определяет, левый или правый оператор?
 		 * 	@return результат: левый == true; правый == false */
 		public boolean opLeftOrRight( ) {
 			return is_left;
+		}
+		
+		/** Определяет, оператор или нет?
+		 *	@param op оператор
+		 * 	@return результат: оператор == true; не оператор == false */
+		public boolean isOperator( ) {
+			return is_operator;
 		}
 		
 		/** Соответствие символьного представления оператора и объекту enum OPERATOR*/
@@ -82,6 +114,14 @@ public class Helper {
 			return null;
 		}
 		
+		public static boolean isOperator(final Character symbol) throws Exception {
+			OPERATOR op = findOPERATOR(symbol);
+			if (op != null) {
+				return op.isOperator();
+			}
+			throw new Exception("Ошибка: Это не оператор");
+		}
+		
 		/** Вычисление результата операции
 		 * @param left -- левая часть выражения
 		 * @param right -- правая часть выражения
@@ -91,7 +131,7 @@ public class Helper {
 			switch(this) {
 				case UNARY_MINUS: return -left;
 				
-				case NUMBER: return left;
+				case NUMERIC: return left;
 
 				case PLUS: return left + right;
 
