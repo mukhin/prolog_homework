@@ -1,5 +1,6 @@
 package calculator;
 
+import java.util.Collections;
 import java.util.Stack;
 
 /** Калькулятор выражений */
@@ -26,6 +27,7 @@ public class Calculator {
 		Stack <String> calc_output = (Stack <String>) output.clone(); // Клонируем выражение
 		Stack <Double> result_stack = new Stack <Double>(); // Очередь, куда записываются числа и результаты вычислений
 		
+		Collections.reverse(calc_output); // Переворачиваем очередь в обратном порядке
 		while(!calc_output.empty()) {
 			String token = calc_output.pop(); // Получить очередной токен
 			if(Helper.isNumeric(token)) { // Если число -- положить в стек результат

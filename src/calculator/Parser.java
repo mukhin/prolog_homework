@@ -66,9 +66,7 @@ public class Parser {
 		}
 		while (!operator_stack.empty()) {
 			output.push(operator_stack.pop());
-		}
-
-		Collections.reverse(output); // Переворачиваем очередь в обратном порядке	
+		}	
 		
 		return (Stack<String>) output.clone();
 	}
