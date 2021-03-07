@@ -21,7 +21,7 @@ public class Calculator {
 	 * @param output выражение
 	 * @return результат */
 	@SuppressWarnings("unchecked")
-	double calculate(Stack<String> output) throws Exception {
+	public double calculate(Stack<String> output) throws Exception {
 		double result = 0.0; // результат
 		Stack <String> calc_output = (Stack <String>) output.clone(); // Клонируем выражение
 		Stack <Double> result_stack = new Stack <Double>(); // Очередь, куда записываются числа и результаты вычислений
