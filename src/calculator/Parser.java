@@ -1,6 +1,5 @@
 package calculator;
 
-import java.util.Collections;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
