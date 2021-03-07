@@ -46,7 +46,7 @@ public class Parser {
 					operator_stack.pop();
 				}
 				else {
-					throw new Exception("Ошибка: Отсутствует открываеющая скобка");
+					throw new Exception("Ошибка: Отсутствует открывающая скобка");
 				}
 			} else if(Helper.isNumeric(token)) { // Если число, добавить в выходную очередь
 				output.push(token);
