@@ -10,7 +10,7 @@ public class DijkstraCalculator {
 	public static void main(String[] args) throws Exception {
 		
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in)); 
-	    String expression = reader.readLine(); //Подготовка исходного выражения
+		String expression = reader.readLine(); //Подготовка исходного выражения
 		String calc_expression = Helper.prepareExpressionString(expression); //Преобразование исходного выражения
 	    
 	    Parser p = new Parser();
