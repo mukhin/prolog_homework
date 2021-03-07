@@ -1,36 +1,31 @@
 package demo;
 
+import java.util.Stack;
+
 import calculator.*;
 
 public class ExampleCalculator {//В качестве математического выражения используется строка входного аргумента 
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 	  
-		String expression = DijkstraCalculator.prepareExpressionString(args[0]); //Исходное выражение
-
-		final char[] input = expression.toCharArray();
-		char[][] output = new char[input.length][input.length];
+		String expression = args[0]; //Исходное выражение
+		String calc_expression = Helper.prepareExpressionString(expression); //Преобразование исходного выражения
+	    
+	    Parser p = new Parser();
+	    Stack<String> output = p.parse(calc_expression);
+	    
+	    Calculator c = new Calculator();
+	    double result = c.calculate(output);
+	    
+	    System.out.println(expression);
+	    
+	    for(String op : output) {
+	    	System.out.print(op);
+	    }
+	    
+	    System.out.println();
+	    
+	    System.out.println(expression + " =" + result);
 		
-		System.out.println("Исходное выражение: " + String.valueOf(input));
-	  
-		if(DijkstraCalculator.expressionParser(input, output)){
-			if (DijkstraCalculator.expressionCalc(output)) {
-				System.out.print("Результат: ");
-				for (int i = 0; i < output.length; i++) {
-					System.out.print(String.valueOf(output[i]));
-				}
-				System.out.println("=" + DijkstraCalculator.getResult());
-			}
-			else {
-				System.out.print("Ошибка вычисления: ");
-				for (int i = 0; i < output.length; i++) {
-					System.out.print(String.valueOf(output[i]));
-				}
-				System.out.println("");
-			}
-		}
-		else {
-			System.out.println("Ошибка разбора: " + String.valueOf(input));
-		}
 	}
 }
