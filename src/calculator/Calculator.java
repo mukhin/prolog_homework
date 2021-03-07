@@ -67,15 +67,15 @@ public class Calculator {
 	private double opCalculate(final double op1, final double op2, final String operator ) {
 		double result = 0.0;
 		switch (operator) {
-			case ("+"): result = op1 + op2;
+			case ("+"): result = op2 + op1;
 				break;
-			case ("-"): result = op1 - op2;
+			case ("-"): result = op2 - op1;
 				break;
-			case ("*"): result = op1 * op2;
+			case ("*"): result = op2 * op1;
 				break;
-			case ("/"): result = op1 / op2;
+			case ("/"): result = op2 / op1;
 				break;
-			case ("%"): result = op1 % op2;
+			case ("%"): result = op2 % op1;
 				break;
 		}
 		return result;
