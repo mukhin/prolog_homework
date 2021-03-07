@@ -10,7 +10,7 @@ public class Parser {
 	private Stack <String> output; // Выходная очередь
 	private Stack <String> operator_stack; // Очередь операторов
 	
-	Parser() {
+	public Parser() {
 		output = new Stack <String>();
 		operator_stack = new Stack <String>();
 	}

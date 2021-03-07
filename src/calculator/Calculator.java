@@ -2,15 +2,29 @@ package calculator;
 
 import java.util.Stack;
 
+/** Калькулятор выражений */
 public class Calculator {
 
-	Calculator() {}
+	public Calculator() {}
 	
+	/** Посчитать выражение в обратной польской нотации
+	 * 	Алгоритм:
+	 * 		1. Берём очередной элемент выражения.
+	 * 		2. Проверяем 
+	 * 			- если это число, помещаем во временный стек result_stack
+	 * 			- если это оператор:
+	 * 				- выталкиваем из стека последние два числа;
+	 * 				- вычисляем результат;
+	 * 				- помещаем результат в стек.
+	 * 		3.	К тому времени, когда исходные элементы закончатся, в стеке должно остаться единственное число. 
+	 * 			Оно и есть результат.	
+	 * @param output выражение
+	 * @return результат */
 	@SuppressWarnings("unchecked")
 	double calculate(Stack<String> output) throws Exception {
-		double result = 0.0;
-		Stack <String> calc_output = (Stack <String>) output.clone();
-		Stack <Double> result_stack = new Stack <Double>();
+		double result = 0.0; // результат
+		Stack <String> calc_output = (Stack <String>) output.clone(); // Клонируем выражение
+		Stack <Double> result_stack = new Stack <Double>(); // Очередь, куда записываются числа и результаты вычислений
 		
 		while(!calc_output.empty()) {
 			String token = calc_output.pop(); // Получить очередной токен
@@ -18,8 +32,8 @@ public class Calculator {
 				result_stack.push(Double.parseDouble(token));
 			}
 			else if(Helper.isOperator(token)){ // Если оператор -- вычислить результат и положить в стек
-				if(result_stack.size() >= 2) {
-					double op1 = result_stack.pop();
+				if(result_stack.size() >= 2) { // Выталкиваем из стека последние два числа, результат вычисления token(op1, op2) помещаем в стек
+					double op1 = result_stack.pop(); 
 					double op2 = result_stack.pop();
 					result = opCalculate(op1, op2, token);
 					result_stack.push(result);		
@@ -34,7 +48,7 @@ public class Calculator {
 			}
 		}
 		
-		if(result_stack.size() == 1) {
+		if(result_stack.size() == 1) { // В стеке должно остаться единственное число -- результат
 			result = result_stack.pop();
 		}
 		else {
