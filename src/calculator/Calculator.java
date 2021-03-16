@@ -1,7 +1,11 @@
 package calculator;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
+
+//import calculator.Helper.OPERATOR;
 
 /** Калькулятор выражений */
 public class Calculator {
@@ -61,25 +65,67 @@ public class Calculator {
 		return result;
 	}
 	
+	enum OPERATOR {
+	    PLUS {
+	        @Override
+	        public double calculate(final double op1, final double op2) {
+	            return op2+op1;
+	        }
+	    },
+	    MINUS {
+	        @Override
+	        public double calculate(final double op1, final double op2) {
+	            return op2-op1;
+	        }
+	        
+	    },
+	    MULTIPLY {
+	        @Override
+	        public double calculate(final double op1, final double op2) {
+	            return op2*op1;
+	        }
+	    },
+	    DIVIDE {
+	        @Override
+	        public double calculate(final double op1, final double op2) {
+	            return op2/op1;
+	        }
+	    },	
+	    MOD {
+	        @Override
+	        public double calculate(final double op1, final double op2) {
+	            return op2%op1;
+	        }
+	    };
+
+	    public abstract double calculate(final double op1, final double op2);
+
+		/** Соответствие символьного представления оператора и объекту enum OPERATOR*/
+		private static Map<String, OPERATOR> operatorMap;
+		
+		static {
+			operatorMap = new HashMap<>();
+			operatorMap.put("+", PLUS);
+			operatorMap.put("-", MINUS);
+			operatorMap.put("*", MULTIPLY);
+			operatorMap.put("/", DIVIDE);
+			operatorMap.put("%", MOD);
+		};
+		
+		/** Поиск в enum по символу оператора
+		 * @param symbol -- символьное представление оператора
+		 * @return объект enum OPERATOR или null */
+		public static OPERATOR findOPERATOR(String symbol) {
+			return operatorMap.get(symbol);
+		}
+	}
+	
 	/** Вычисление выражения для оператора
 	 * 	@param op1 левый операнд
 	 * 	@param op2 правый операнд
 	 *	@param operator оператор
 	 *	@return результат вычисления */
 	private double opCalculate(final double op1, final double op2, final String operator ) {
-		double result = 0.0;
-		switch (operator) {
-			case ("+"): result = op2 + op1;
-				break;
-			case ("-"): result = op2 - op1;
-				break;
-			case ("*"): result = op2 * op1;
-				break;
-			case ("/"): result = op2 / op1;
-				break;
-			case ("%"): result = op2 % op1;
-				break;
-		}
-		return result;
+		return OPERATOR.findOPERATOR(operator).calculate(op1, op2);
 	}
 }
