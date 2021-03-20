@@ -1,33 +1,20 @@
 package calculator;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.Stack;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Scanner;
 
-/** В качестве значений операндов можно использовать многоразрядные числа. */
 public class DijkstraCalculator {
 	
-	public static void main(String[] args) throws Exception {
-		
-		//BufferedReader reader = new BufferedReader(new InputStreamReader(System.in)); 
-		String expression = "1+1";//reader.readLine(); //Подготовка исходного выражения
-		String calc_expression = Helper.prepareExpressionString(expression); //Преобразование исходного выражения
-	    
-	    Parser p = new Parser();
-	    Stack<String> output = p.parse(calc_expression);
-	    
-	    Calculator c = new Calculator();
-	    double result = c.calculate(output);
-	    
-	    System.out.println(expression);
-	    
-	    
-	    output.forEach(System.out::println);
-	    
-	    
-	    System.out.println(expression + " =" + result);
-		
-	}
+    private static final Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) throws Exception {
+        IO.apply(() -> "Введите выражение:")
+                .mapToVoid(System.out::println)
+                .map(v -> scanner.nextLine())
+                .map(Parser::parse)
+                .map(Parser::toRPN)
+                .map(Calculator::calculate)
+                .map(Helper::calcToString)
+                .mapToVoid(System.out::println)
+                .unsafeRun();
+    }
 }

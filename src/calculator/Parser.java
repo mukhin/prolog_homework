@@ -1,72 +1,80 @@
 package calculator;
 
-import java.util.Stack;
-import java.util.StringTokenizer;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Parser {
 	
-	private Stack <String> output; // Выходная очередь
-	private Stack <String> operator_stack; // Очередь операторов
-	
-	public Parser() {
-		output = new Stack <String>();
-		operator_stack = new Stack <String>();
-	}
-	
-	/** Разобрать выражение и записать его в выходную очередь в обратной польской нотации
-	 * @param expression математическое выражение
-	 * @return output выходная очередь в обратной польской нотации */
-	@SuppressWarnings("unchecked")
-	public Stack<String> parse(String expression) throws Exception {
-		expression = Helper.prepareExpressionString(expression);
-		
-		// Удаляем содержимое очередей
-		operator_stack.clear();
-		output.clear();
-		
-		// Разбиваем строку выражения на отдельные элементы 
-		StringTokenizer stringTokenizer = new StringTokenizer(expression, Helper.OPERATORS + Helper.BRACKETS, true);
-		
-		while (stringTokenizer.hasMoreTokens()) {
-			
-			String token = stringTokenizer.nextToken();
-			
-			if (Helper.isLeftBracket(token)) { // Если левая скобка, поместить в стек операторов
-				operator_stack.push(token);
-				
-				// Если правая скобка, все операторы переносятся в выходную очередь,
-				// пока не появится левая скобка
-			} else if (Helper.isRightBracket(token)) {
-				while (!operator_stack.empty()
-					&& !Helper.isLeftBracket(operator_stack.lastElement())) {
-					output.push(operator_stack.pop());
-				}
-				if (!operator_stack.empty()) { // Проверяем, что очередь операторов не пуста, иначе пропущена левая скобка 
-					operator_stack.pop();
-				}
-				else {
-					throw new Exception("Ошибка: Отсутствует открывающая скобка");
-				}
-			} else if(Helper.isNumeric(token)) { // Если число, добавить в выходную очередь
-				output.push(token);
-				
-			} else if (Helper.isOperator(token)) { // Пока приоритет token меньше операторов из очереди, добавляем их в output
-				while (!operator_stack.empty()
-						&& Helper.isOperator(operator_stack.lastElement())
-						&& Helper.getPriority(token) <= Helper.getPriority(operator_stack.lastElement())) {
-					output.push(operator_stack.pop());
-				}
-				operator_stack.push(token);
-				
-			} else { // Если token не подходит ни под один из типов, -- ошибка
-				throw new Exception("Ошибка: Неизвестный элемент \"" + token + "\"");
-			}
-		}
-		while (!operator_stack.empty()) {
-			output.push(operator_stack.pop());
-		}	
-		
-		return (Stack<String>) output.clone();
-	}
+    public static Deque<String> toRPN(final List<String> tokens) {
+
+        State<Tuple2<Deque<String>, Deque<String>>, String> state = State.of(s -> new StateTuple<>(s, ""));
+
+        Iterator<String> iterator = tokens.iterator();
+
+        StateTuple<Tuple2<Deque<String>, Deque<String>>, String> stateTuple =
+                traverse(state, iterator)
+                        .flatMap(s -> transferRest())
+                        .apply(Tuple2.of(Helper.newDeque(), Helper.newDeque()));
+
+        return stateTuple.state.output;
+
+    }
+
+    public static State<Tuple2<Deque<String>, Deque<String>>, String> traverse(State<Tuple2<Deque<String>, Deque<String>>, String> state, Iterator<String> iterator) {
+        if (!iterator.hasNext()) return state;
+        String token = iterator.next();
+        return traverse(state.flatMap(s -> processToken(token)), iterator);
+    }
+
+    private static State<Tuple2<Deque<String>, Deque<String>>, String> transferRest() {
+        return State.modify(t -> {
+            while (!t.stack.isEmpty()) {
+                t.output.push(t.stack.pop());
+            }
+            return t;
+        });
+    }
+
+    private static State<Tuple2<Deque<String>, Deque<String>>, String> processToken(String token) {
+        return State.modify(t -> {
+            if ("(".equals(token)) {
+                t.stack.push(token);
+            } else if (")".equals(token)) {
+                while (!"(".equals(t.stack.peek())) {
+                    t.output.push(t.stack.pop());
+                }
+                t.stack.pop();
+            } else if (Helper.isOperator(token)) {
+                Predicate<String> predicate = Helper.associativity(token) == Helper.Associativity.LEFT ?
+                        op -> Helper.getPriority(op) >= Helper.getPriority(token) : op -> Helper.getPriority(op) > Helper.getPriority(token);
+                while (!t.stack.isEmpty() && predicate.test(t.stack.peek())) {
+                    t.output.push(t.stack.pop());
+                }
+                t.stack.push(token);
+            } else {
+                t.output.push(token);
+            }
+            return t;
+        });
+    }
+    
+    public static List<String> parse(String expression) {
+        List<String> tokens = new ArrayList<>();
+        Pattern pattern = Pattern.compile("([0-9]*)([+\\-*%/^]*)([()]*)");
+        Matcher matcher = pattern.matcher(expression);
+        while (matcher.find()) {
+            for (int i = 1; i <= matcher.groupCount(); i++) {
+                String group = matcher.group(i);
+                if (group.isEmpty()) continue;
+                tokens.add(group.trim());
+            }
+        }
+        return tokens;
+    }
 }

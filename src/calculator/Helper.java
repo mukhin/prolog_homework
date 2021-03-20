@@ -1,13 +1,15 @@
 package calculator;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+
 /** Вспомогательный класс для предоставления общедоступных констант и функций */
 public class Helper {
-	public static final String OPERATORS = "+-*/%"; // Операторы
-	public static final String BRACKETS = "()"; // Скобки
-	
-	/** Проверка токена на соответствие числу
-	 *	@param токен
-	 *	@return результат сравнения */
+
 	public static boolean isNumeric(String token) {
 		try {
 			Integer.parseInt(token);
@@ -17,48 +19,115 @@ public class Helper {
 		return true;
 	}
 	
-	/** Проверка токена на соответствие левой скобке
-	 *	@param токен
-	 *	@return результат сравнения */
 	public static boolean isLeftBracket(String token) {
 		return token.equals("(");
 	}
 
-	/** Проверка токена на соответствие правой скобке
-	 *	@param токен
-	 *	@return результат сравнения */
 	public static boolean isRightBracket(String token) {
 		return token.equals(")");
 	}
 
-	/** Проверка токена на соответствие оператору
-	 *	@param токен
-	 *	@return результат сравнения */
 	public static boolean isOperator(String token) {
-		return OPERATORS.contains(token);
+		return (OPERATOR.findOPERATOR(token) != null);
 	}
 	
-	/** Проверка приоритета токена-оператора
-	 *	@param токен
-	 *	@return результат сравнения */
-	public static int getPriority(String token) {
-		if (token.equals("+") || token.equals("-")) {
-			return 1;
-		}
-		return 2;
-	}
+    public static int getPriority(final String op) {
+    	return (OPERATOR.findOPERATOR(op) != null) ?
+    			OPERATOR.findOPERATOR(op).getPriority():0;
+    }
+
+    public enum Associativity {
+        LEFT, RIGHT
+    }
+
+    public static Associativity associativity(final String op) {
+    	return (OPERATOR.findOPERATOR(op) != null) ?
+    			OPERATOR.findOPERATOR(op).getAssociativity():Associativity.LEFT;
+    }
 	
-	/** Подготовка строки выражения перед выполнением вычислений 
-	 *	@param expression исходное выражение
-	 	@return результат преобразования */
-	public static String prepareExpressionString(String expression) {
-		expression = expression.replace(" ", "").replace("(-", "(0-").replace("(+", "(0+");
-		// Если выражение начинается со знака + или -, добавить "0"
-		if (expression.charAt(0) == '-' || expression.charAt(0) == '+') {
-			  expression = "0" + expression;
+    public static String calcToString(Stack<String> strings) {
+        return strings.stream().reduce("", (s1, s2) -> s2 + " " + s1);
+    }
+    
+    public static Deque<String> newDeque() {
+        return new ArrayDeque<>();
+    }
+    
+	public enum OPERATOR {
+	    PLUS(2, 2, Associativity.LEFT) {
+	        @Override
+	        public double calculate(final double op1, final double op2) {
+	            return op2+op1;
+	        }
+	    },
+	    MINUS(2, 2, Associativity.LEFT) {
+	        @Override
+	        public double calculate(final double op1, final double op2) {
+	            return op2-op1;
+	        }
+	        
+	    },
+	    MULTIPLY(3, 2, Associativity.LEFT) {
+	        @Override
+	        public double calculate(final double op1, final double op2) {
+	            return op2*op1;
+	        }
+	    },
+	    DIVIDE(3, 2, Associativity.LEFT) {
+	        @Override
+	        public double calculate(final double op1, final double op2) {
+	            return op2/op1;
+	        }
+	    },	
+	    MOD(3, 2, Associativity.LEFT) {
+	        @Override
+	        public double calculate(final double op1, final double op2) {
+	            return op2%op1;
+	        }
+	    };
+		
+		private final int arguments;
+		private final int priority;
+		Associativity associativity;
+
+	    public abstract double calculate(final double op1, final double op2);
+
+		/** Соответствие символьного представления оператора и объекту enum OPERATOR*/
+		private static Map<String, OPERATOR> operatorMap;
+		
+		static {
+			operatorMap = new HashMap<>();
+			operatorMap.put("+", PLUS);
+			operatorMap.put("-", MINUS);
+			operatorMap.put("*", MULTIPLY);
+			operatorMap.put("/", DIVIDE);
+			operatorMap.put("%", MOD);
+		};
+		
+		public static OPERATOR findOPERATOR(String symbol) {
+			return operatorMap.get(symbol);
 		}
-			//Всё выражение обрамляется в скобки, поскольку за каждым числом должен следовать оператор 
-		expression = "(" + expression + ")";
-		return expression;
+		
+		public static Set<String> getOperators(){
+			return operatorMap.keySet();
+		}
+		
+		OPERATOR(int arguments, int priority, Associativity associativity) {
+			this.arguments = arguments;
+			this.priority = priority;
+			this.associativity = associativity;
+		}
+		
+		public int getArguments() {
+			return arguments;
+		}
+		
+		public int getPriority() {
+			return priority;
+		}
+		
+		public Associativity getAssociativity() {
+			return associativity;
+		}
 	}
 }

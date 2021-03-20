@@ -1,16 +1,12 @@
 package calculator;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Stack;
+import java.util.Deque;
 
 //import calculator.Helper.OPERATOR;
 
 /** Калькулятор выражений */
 public class Calculator {
-
-	public Calculator() {}
 	
 	/** Посчитать выражение в обратной польской нотации
 	 * 	Алгоритм:
@@ -24,14 +20,13 @@ public class Calculator {
 	 * 		3.	К тому времени, когда исходные элементы закончатся, в стеке должно остаться единственное число. 
 	 * 			Оно и есть результат.	
 	 * @param output выражение
-	 * @return результат */
-	@SuppressWarnings("unchecked")
-	public double calculate(Stack<String> output) throws Exception {
+	 * @return Массив PRN+результат */
+	public static Stack<String> calculate(Deque<String> output) {
+		
 		double result = 0.0; // результат
-		Stack <String> calc_output = (Stack <String>) output.clone(); // Клонируем выражение
+		Stack <String> calc_output = new Stack <String>(); calc_output.addAll(output); // Клонируем выражение
 		Stack <Double> result_stack = new Stack <Double>(); // Очередь, куда записываются числа и результаты вычислений
 		
-		Collections.reverse(calc_output); // Переворачиваем очередь в обратном порядке
 		while(!calc_output.empty()) {
 			String token = calc_output.pop(); // Получить очередной токен
 			if(Helper.isNumeric(token)) { // Если число -- положить в стек результат
@@ -44,13 +39,13 @@ public class Calculator {
 					result = opCalculate(op1, op2, token);
 					result_stack.push(result);		
 				}
-				else {
-					throw new Exception("Ошибка: Количество операндов выражения \""
+				else {					
+					returnError("Ошибка: Количество операндов выражения \""
 						+ token + "\" равно" + result_stack.size());
 				}
 				
 			} else { // Если token не подходит ни под один из типов, -- ошибка
-				throw new Exception("Ошибка: Неизвестный элемент \"" + token + "\"");
+				returnError("Ошибка: Неизвестный элемент \"" + token + "\"");
 			}
 		}
 		
@@ -58,74 +53,25 @@ public class Calculator {
 			result = result_stack.pop();
 		}
 		else {
-			throw new Exception("Ошибка: Количество операндов в стеке равно" + result_stack.size()
+			returnError("Ошибка: Количество операндов в стеке равно " + result_stack.size()
 				+ " Ожидалось: 1");
 		}
 		
-		return result;
+		calc_output.add(Double.toString(result));
+		calc_output.add("=");
+		calc_output.addAll(output);
+		return calc_output;
+	}
+
+	private static double opCalculate(final double op1, final double op2, final String operator ) {
+		return Helper.OPERATOR.findOPERATOR(operator).calculate(op1, op2);
 	}
 	
-	enum OPERATOR {
-	    PLUS {
-	        @Override
-	        public double calculate(final double op1, final double op2) {
-	            return op2+op1;
-	        }
-	    },
-	    MINUS {
-	        @Override
-	        public double calculate(final double op1, final double op2) {
-	            return op2-op1;
-	        }
-	        
-	    },
-	    MULTIPLY {
-	        @Override
-	        public double calculate(final double op1, final double op2) {
-	            return op2*op1;
-	        }
-	    },
-	    DIVIDE {
-	        @Override
-	        public double calculate(final double op1, final double op2) {
-	            return op2/op1;
-	        }
-	    },	
-	    MOD {
-	        @Override
-	        public double calculate(final double op1, final double op2) {
-	            return op2%op1;
-	        }
-	    };
-
-	    public abstract double calculate(final double op1, final double op2);
-
-		/** Соответствие символьного представления оператора и объекту enum OPERATOR*/
-		private static Map<String, OPERATOR> operatorMap;
-		
-		static {
-			operatorMap = new HashMap<>();
-			operatorMap.put("+", PLUS);
-			operatorMap.put("-", MINUS);
-			operatorMap.put("*", MULTIPLY);
-			operatorMap.put("/", DIVIDE);
-			operatorMap.put("%", MOD);
-		};
-		
-		/** Поиск в enum по символу оператора
-		 * @param symbol -- символьное представление оператора
-		 * @return объект enum OPERATOR или null */
-		public static OPERATOR findOPERATOR(String symbol) {
-			return operatorMap.get(symbol);
-		}
+	private static Stack<String> returnError(String error){
+		Stack <String> error_stack = new Stack <String>();
+		error_stack.add(error);
+		return error_stack;
 	}
 	
-	/** Вычисление выражения для оператора
-	 * 	@param op1 левый операнд
-	 * 	@param op2 правый операнд
-	 *	@param operator оператор
-	 *	@return результат вычисления */
-	private double opCalculate(final double op1, final double op2, final String operator ) {
-		return OPERATOR.findOPERATOR(operator).calculate(op1, op2);
-	}
+	
 }
